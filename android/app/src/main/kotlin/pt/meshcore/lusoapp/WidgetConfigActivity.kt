@@ -1,6 +1,5 @@
 package pt.meshcore.lusoapp
 
-import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.graphics.Color
@@ -11,19 +10,20 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SwitchCompat
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.flexbox.FlexboxLayout
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.materialswitch.MaterialSwitch
 
 class WidgetConfigActivity : AppCompatActivity() {
 
@@ -69,7 +69,7 @@ class WidgetConfigActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_widget_config)
-        setSupportActionBar(findViewById<Toolbar>(R.id.config_toolbar))
+        setSupportActionBar(findViewById<MaterialToolbar>(R.id.config_toolbar))
 
         val current = WidgetConfig.load(this, widgetId)
         selectedAccent = current.accent
@@ -169,24 +169,22 @@ class WidgetConfigActivity : AppCompatActivity() {
     }
 
     private fun makeCustomTile(): View {
-        val size = (resources.displayMetrics.density * 40).toInt()
-        val margin = (resources.displayMetrics.density * 6).toInt()
+        val density = resources.displayMetrics.density
+        val height  = (density * 40).toInt()
+        val margin  = (density * 6).toInt()
 
-        return TextView(this).apply {
+        return MaterialButton(
+            this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle,
+        ).apply {
             layoutParams = ViewGroup.MarginLayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, size,
+                ViewGroup.LayoutParams.WRAP_CONTENT, height,
             ).apply {
                 setMargins(margin, margin, margin, margin)
             }
             text = getString(R.string.widget_config_custom_color)
-            setPadding(
-                (resources.displayMetrics.density * 12).toInt(),
-                0,
-                (resources.displayMetrics.density * 12).toInt(),
-                0,
-            )
-            gravity = android.view.Gravity.CENTER
-            setBackgroundResource(android.R.drawable.btn_default)
+            cornerRadius = height / 2
+            insetTop = 0
+            insetBottom = 0
             setOnClickListener { showCustomColorDialog() }
         }
     }
@@ -236,7 +234,7 @@ class WidgetConfigActivity : AppCompatActivity() {
             container.addView(sb)
         }
 
-        AlertDialog.Builder(ctx)
+        MaterialAlertDialogBuilder(ctx)
             .setTitle(R.string.widget_config_custom_color)
             .setView(container)
             .setPositiveButton(R.string.widget_config_save) { _, _ ->
@@ -250,13 +248,13 @@ class WidgetConfigActivity : AppCompatActivity() {
     }
 
     private fun wireSaveCancel() {
-        findViewById<Button>(R.id.config_cancel).setOnClickListener {
+        findViewById<MaterialButton>(R.id.config_cancel).setOnClickListener {
             finish() // result is already RESULT_CANCELED
         }
-        findViewById<Button>(R.id.config_save).setOnClickListener {
+        findViewById<MaterialButton>(R.id.config_save).setOnClickListener {
             val selected = rows.filter { it.checked }.map { it.key }
             if (selected.size !in WidgetConfig.MIN_BUTTONS..WidgetConfig.MAX_BUTTONS) {
-                AlertDialog.Builder(this)
+                MaterialAlertDialogBuilder(this)
                     .setMessage(
                         "Escolhe entre ${WidgetConfig.MIN_BUTTONS} e " +
                         "${WidgetConfig.MAX_BUTTONS} botões.",
@@ -288,11 +286,11 @@ class WidgetConfigActivity : AppCompatActivity() {
         var touchHelper: ItemTouchHelper? = null
 
         inner class VH(view: View) : RecyclerView.ViewHolder(view) {
-            val check: CheckBox       = view.findViewById(R.id.pick_check)
-            val icon: ImageView       = view.findViewById(R.id.pick_icon)
-            val label: TextView       = view.findViewById(R.id.pick_label)
-            val labelSwitch: SwitchCompat = view.findViewById(R.id.pick_label_toggle)
-            val drag: ImageView       = view.findViewById(R.id.pick_drag)
+            val check: MaterialCheckBox   = view.findViewById(R.id.pick_check)
+            val icon: ImageView           = view.findViewById(R.id.pick_icon)
+            val label: TextView           = view.findViewById(R.id.pick_label)
+            val labelSwitch: MaterialSwitch = view.findViewById(R.id.pick_label_toggle)
+            val drag: ImageView           = view.findViewById(R.id.pick_drag)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
