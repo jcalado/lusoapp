@@ -56,50 +56,57 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
             views.setTextViewText(R.id.widget_radio_name, radioName)
 
             // GPS-sharing badge — visible only when the user opted in.
-            if (gpsSharing) {
-                views.setViewVisibility(R.id.widget_gps_badge, android.view.View.VISIBLE)
-                views.setTextViewText(R.id.widget_gps_badge, "📍")
-            } else {
-                views.setViewVisibility(R.id.widget_gps_badge, android.view.View.GONE)
-            }
+            views.setViewVisibility(
+                R.id.widget_gps_badge,
+                if (gpsSharing) android.view.View.VISIBLE else android.view.View.GONE,
+            )
 
-            if (connected) {
-                views.setTextViewText(R.id.widget_status, "● ONLINE")
-                views.setTextColor(R.id.widget_status, Color.parseColor("#00E676"))
-            } else {
-                views.setTextViewText(R.id.widget_status, "● OFFLINE")
-                views.setTextColor(R.id.widget_status, Color.parseColor("#FF5252"))
-            }
+            views.setTextViewText(
+                R.id.widget_status,
+                if (connected) "ONLINE" else "OFFLINE",
+            )
+            views.setInt(
+                R.id.widget_status,
+                "setBackgroundResource",
+                if (connected) {
+                    R.drawable.widget_status_chip_online
+                } else {
+                    R.drawable.widget_status_chip_offline
+                },
+            )
 
-            views.setTextViewText(R.id.widget_battery,  "Bat: $batteryPct%")
-            views.setTextViewText(R.id.widget_contacts, "$contacts contactos")
-            views.setTextViewText(R.id.widget_channels, "$channels canais")
+            views.setTextViewText(R.id.widget_battery,  "$batteryPct%")
+            views.setImageViewResource(
+                R.id.widget_battery_icon,
+                batteryIconFor(batteryPct),
+            )
+            views.setTextViewText(R.id.widget_contacts, contacts.toString())
+            views.setTextViewText(R.id.widget_channels, channels.toString())
             views.setTextViewText(R.id.widget_updated,  lastUpdated)
 
-            // Connect button reflects the live transport state.
-            if (connected) {
-                views.setTextViewText(R.id.widget_btn_connect, "🔌  Ligado")
-                views.setTextColor(
-                    R.id.widget_btn_connect,
-                    Color.parseColor("#FF88FFAA"),
-                )
-                views.setInt(
-                    R.id.widget_btn_connect,
-                    "setBackgroundResource",
-                    R.drawable.widget_button_connect_on_bg,
-                )
+            // Connect button reflects the live transport state. The compound
+            // power icon stays the off-state colour because RemoteViews can't
+            // reliably retint a compound drawable across API levels — text
+            // colour + background carry the state instead.
+            val connectColor = if (connected) {
+                Color.parseColor("#FF88FFAA")
             } else {
-                views.setTextViewText(R.id.widget_btn_connect, "🔌  Ligar")
-                views.setTextColor(
-                    R.id.widget_btn_connect,
-                    Color.parseColor("#FFFF8888"),
-                )
-                views.setInt(
-                    R.id.widget_btn_connect,
-                    "setBackgroundResource",
-                    R.drawable.widget_button_connect_off_bg,
-                )
+                Color.parseColor("#FFFF8888")
             }
+            views.setTextViewText(
+                R.id.widget_btn_connect_label,
+                if (connected) "Ligado" else "Ligar",
+            )
+            views.setTextColor(R.id.widget_btn_connect_label, connectColor)
+            views.setInt(
+                R.id.widget_btn_connect,
+                "setBackgroundResource",
+                if (connected) {
+                    R.drawable.widget_button_connect_on_bg
+                } else {
+                    R.drawable.widget_button_connect_off_bg
+                },
+            )
 
             // Header (radio name + status) → just open the app.
             views.setOnClickPendingIntent(
@@ -154,6 +161,14 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
             )
 
             appWidgetManager.updateAppWidget(widgetId, views)
+        }
+
+        private fun batteryIconFor(pct: Int): Int = when {
+            pct <= 15 -> R.drawable.ic_widget_battery_alert
+            pct <= 40 -> R.drawable.ic_widget_battery_low
+            pct <= 70 -> R.drawable.ic_widget_battery_mid
+            pct <= 90 -> R.drawable.ic_widget_battery_high
+            else      -> R.drawable.ic_widget_battery_full
         }
     }
 }

@@ -20,31 +20,39 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginEnd="6dp"
             android:text="—"
             android:textColor="#FFFFFFFF"
-            android:textSize="15sp"
+            android:textSize="17sp"
             android:textStyle="bold"
             android:maxLines="1"
             android:ellipsize="end" />
 
         <!-- GPS sharing badge — green pin appears only when user opted in -->
-        <TextView
+        <ImageView
             android:id="@+id/widget_gps_badge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:layout_marginEnd="6dp"
-            android:text="📍"
-            android:textSize="12sp"
+            android:src="@drawable/ic_widget_location"
+            android:contentDescription="GPS"
             android:visibility="gone" />
 
+        <!-- Status pill — background swapped at runtime to show on/off colour -->
         <TextView
             android:id="@+id/widget_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="● OFFLINE"
-            android:textColor="#FFFF5252"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:background="@drawable/widget_status_chip_offline"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:text="OFFLINE"
+            android:textColor="#FFFFFFFF"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.05" />
 
     </LinearLayout>
 
@@ -57,21 +65,30 @@
         android:background="#2200E676"
         android:orientation="horizontal" />
 
-    <!-- Row 2: Battery + last updated -->
+    <!-- Row 2: Battery icon + percentage, last updated on the right -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
+        <ImageView
+            android:id="@+id/widget_battery_icon"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginEnd="5dp"
+            android:src="@drawable/ic_widget_battery_alert"
+            android:contentDescription="@null" />
+
         <TextView
             android:id="@+id/widget_battery"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Bat: 0%"
-            android:textColor="#FFAAAAAA"
-            android:textSize="11sp" />
+            android:text="0%"
+            android:textColor="#FFFFFFFF"
+            android:textSize="11sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/widget_updated"
@@ -83,30 +100,46 @@
 
     </LinearLayout>
 
-    <!-- Row 3: Contacts + channels -->
+    <!-- Row 3: contact count + channel count, each with its own icon -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:layout_marginTop="2dp">
+        android:layout_marginTop="3dp">
+
+        <ImageView
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/ic_widget_people"
+            android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/widget_contacts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="0 contactos"
+            android:text="0"
             android:textColor="#FF00E676"
-            android:textSize="11sp" />
+            android:textSize="11sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/ic_widget_tag"
+            android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/widget_channels"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0 canais"
+            android:text="0"
             android:textColor="#FF00E676"
-            android:textSize="11sp" />
+            android:textSize="11sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
@@ -120,19 +153,30 @@
         android:orientation="horizontal" />
 
     <!-- SOS row — broadcasts the configured emergency canned message to ch 0 -->
-    <TextView
+    <LinearLayout
         android:id="@+id/widget_btn_sos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/widget_button_sos_bg"
         android:gravity="center"
+        android:orientation="horizontal"
         android:paddingTop="9dp"
-        android:paddingBottom="9dp"
-        android:text="🆘  SOS — Emergência"
-        android:textColor="#FFFF8888"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:paddingBottom="9dp">
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_widget_warning"
+            android:contentDescription="@null" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SOS — Emergência"
+            android:textColor="#FFFF8888"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <!-- Action button row -->
     <LinearLayout
@@ -143,7 +187,7 @@
         android:gravity="center">
 
         <!-- Send Advert (highlighted in orange) -->
-        <TextView
+        <LinearLayout
             android:id="@+id/widget_btn_advert"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -151,15 +195,26 @@
             android:layout_marginEnd="4dp"
             android:background="@drawable/widget_button_advert_bg"
             android:gravity="center"
+            android:orientation="horizontal"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="📡  Anúncio"
-            android:textColor="#FFFFCC88"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:paddingBottom="8dp">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_widget_broadcast"
+                android:contentDescription="@null" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Anúncio"
+                android:textColor="#FFFFCC88"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <!-- Open Chats -->
-        <TextView
+        <LinearLayout
             android:id="@+id/widget_btn_chats"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -168,14 +223,25 @@
             android:layout_marginEnd="4dp"
             android:background="@drawable/widget_button_bg"
             android:gravity="center"
+            android:orientation="horizontal"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="💬  Chats"
-            android:textColor="#FFFFFFFF"
-            android:textSize="11sp" />
+            android:paddingBottom="8dp">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_widget_chat"
+                android:contentDescription="@null" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chats"
+                android:textColor="#FFFFFFFF"
+                android:textSize="11sp" />
+        </LinearLayout>
 
         <!-- Open Map -->
-        <TextView
+        <LinearLayout
             android:id="@+id/widget_btn_map"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -184,14 +250,27 @@
             android:layout_marginEnd="4dp"
             android:background="@drawable/widget_button_bg"
             android:gravity="center"
+            android:orientation="horizontal"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="🗺  Mapa"
-            android:textColor="#FFFFFFFF"
-            android:textSize="11sp" />
+            android:paddingBottom="8dp">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_widget_map"
+                android:contentDescription="@null" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mapa"
+                android:textColor="#FFFFFFFF"
+                android:textSize="11sp" />
+        </LinearLayout>
 
-        <!-- Connect / Devices — colour + label change based on connection state -->
-        <TextView
+        <!-- Connect / Devices — colour + label change based on connection state.
+             The container holds the click target; the inner TextView carries the
+             dynamic label/colour so the provider can update it directly. -->
+        <LinearLayout
             android:id="@+id/widget_btn_connect"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -199,12 +278,24 @@
             android:layout_marginStart="4dp"
             android:background="@drawable/widget_button_connect_off_bg"
             android:gravity="center"
+            android:orientation="horizontal"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:text="🔌  Ligar"
-            android:textColor="#FFFF8888"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:paddingBottom="8dp">
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_widget_power"
+                android:contentDescription="@null" />
+            <TextView
+                android:id="@+id/widget_btn_connect_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ligar"
+                android:textColor="#FFFF8888"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
     </LinearLayout>
 
