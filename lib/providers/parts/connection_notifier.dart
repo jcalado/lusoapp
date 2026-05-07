@@ -400,13 +400,27 @@ class ConnectionNotifier extends StateNotifier<TransportState> {
 
     final batteryPct = batteryPercentFromMv(batteryMv);
 
+    // Compute best SNR locally — `bestSignalSnrProvider` watches
+    // `connectionProvider`, which is *us*, so reading it from here would
+    // raise CircularDependencyError. Mirror its logic on the rx log.
+    final isConnected = state == TransportState.connected;
+    double? bestSnr;
+    if (isConnected) {
+      final log = _ref.read(rxLogProvider);
+      final cutoff = DateTime.now().subtract(const Duration(minutes: 5));
+      for (final e in log) {
+        if (!e.receivedAt.isAfter(cutoff)) continue;
+        if (bestSnr == null || e.snr > bestSnr) bestSnr = e.snr;
+      }
+    }
+
     WidgetService.update(
       radioName: selfInfo?.name ?? '—',
-      connected: state == TransportState.connected,
+      connected: isConnected,
       batteryPct: batteryPct,
       contactCount: contacts.length,
       channelCount: channels.where((c) => !c.isEmpty).length,
-      signalBars: WidgetService.signalBarsForSnr(_ref.read(bestSignalSnrProvider)),
+      signalBars: WidgetService.signalBarsForSnr(bestSnr),
     );
   }
 
