@@ -167,6 +167,10 @@ class _McAppPtState extends ConsumerState<McAppPt> {
         router.go('/map');
       case WidgetAction.openConnect:
         router.go('/connect');
+      case WidgetAction.openPlan333:
+        router.go('/apps/plan333');
+      case WidgetAction.openTelemetry:
+        router.go('/apps/telemetry');
       case WidgetAction.sendAdvert:
         final svc = ref.read(radioServiceProvider);
         final connected =
