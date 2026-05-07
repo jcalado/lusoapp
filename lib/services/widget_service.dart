@@ -118,7 +118,13 @@ enum WidgetAction {
   openMap,
 
   /// Navigate to the connect screen (device picker).
-  openConnect;
+  openConnect,
+
+  /// Navigate to the Plan 3-3-3 mini-app.
+  openPlan333,
+
+  /// Navigate to the Telemetry mini-app.
+  openTelemetry;
 
   static WidgetAction? fromUri(Uri uri) {
     if (uri.scheme != 'meshcore-widget') return null;
@@ -130,6 +136,8 @@ enum WidgetAction {
       'nav/channels' => WidgetAction.openChats,
       'nav/map' => WidgetAction.openMap,
       'nav/connect' => WidgetAction.openConnect,
+      'nav/apps/plan333' => WidgetAction.openPlan333,
+      'nav/apps/telemetry' => WidgetAction.openTelemetry,
       _ => null,
     };
   }
