@@ -3,6 +3,7 @@ package pt.meshcore.lusoapp
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
 import android.util.Log
@@ -96,9 +97,10 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
             )
 
             // Signal bars — only meaningful while connected.
-            renderSignalBars(views, if (connected) signalBars else 0)
+            renderSignalBars(views, if (connected) signalBars else 0, accent)
 
-            // Status dot: neutral white drawable tinted at runtime.
+            // Status dot: keep the oval drawable's shape; tint it with the
+            // accent (online) or leave the offline drawable as-is.
             views.setTextViewText(
                 R.id.widget_status,
                 if (connected) "ONLINE" else "OFFLINE",
@@ -112,26 +114,10 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
                     R.drawable.widget_status_dot_offline
                 },
             )
-            // (RemoteViews can't setColorFilter on a FrameLayout's background
-            // drawable directly — we keep the dot tinted via two separate
-            // drawables: neutral (white, recolored by ColorMatrixColorFilter
-            // would require API hacks) ⇒ instead use a tinted shape via
-            // setColorFilter on a child ImageView. Keep it simple: replace
-            // the neutral drawable with a runtime-tinted one if accent
-            // differs from white. The simpler path used here: when the user
-            // keeps the default accent, we already render brand-orange
-            // through the default drawable mapping via setBackgroundResource
-            // above using the *neutral* drawable, then apply tint by
-            // swapping in a ColorStateList through android:backgroundTint.)
-            //
-            // Practical implementation: provide a tinted drawable per accent
-            // by using setInt + "setBackgroundColor" on a circular shape.
-            // FrameLayouts ignore setColorFilter via RemoteViews. The
-            // robust trick is to set the background color directly:
-            views.setInt(
+            views.setColorStateList(
                 R.id.widget_status_dot,
-                "setBackgroundColor",
-                if (connected) accent else context.getColor(android.R.color.transparent),
+                "setBackgroundTintList",
+                if (connected) ColorStateList.valueOf(accent) else null,
             )
 
             // Battery
@@ -256,9 +242,14 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
             views.setImageViewResource(icon, iconRes)
             views.setInt(icon, "setColorFilter", iconTint)
             views.setInt(frame, "setBackgroundResource", bgRes)
-            if (bgTint != null) {
-                views.setInt(frame, "setBackgroundColor", bgTint)
-            }
+            // Tint the oval background while preserving its shape.
+            // setBackgroundColor would replace the drawable with a solid
+            // rectangle; setBackgroundTintList keeps the oval.
+            views.setColorStateList(
+                frame,
+                "setBackgroundTintList",
+                if (bgTint != null) ColorStateList.valueOf(bgTint) else null,
+            )
             views.setTextViewText(label, labelText)
             views.setTextColor(label, labelColor)
             views.setViewVisibility(
@@ -282,24 +273,17 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
             R.id.widget_signal_bar_3,
         )
 
-        // Mirrors lib/ui/screens/home_screen.dart::_SignalBarsIcon._bars +
-        // its colour mapping. Keep these in sync.
-        private fun renderSignalBars(views: RemoteViews, bars: Int) {
-            val color = when (bars) {
-                4    -> Color.parseColor("#FF4CAF50") // green
-                3    -> Color.parseColor("#FF8BC34A") // light green
-                2    -> Color.parseColor("#FFFF9800") // orange
-                1    -> Color.parseColor("#FFF44336") // red
-                else -> Color.parseColor("#FF9E9E9E") // gray (no signal)
-            }
-            // Unfilled bars use the same hue at low alpha (matches the app).
-            val unfilled = (color and 0x00FFFFFF) or 0x37000000  // alpha ≈ 55/255
+        // Renders 4 stepped bars in the widget header. Filled bars use the
+        // current accent; unfilled bars use the same hue at low alpha so the
+        // bar count is legible without competing with the accent's hue.
+        private fun renderSignalBars(views: RemoteViews, bars: Int, accent: Int) {
+            val unfilled = (accent and 0x00FFFFFF) or 0x37000000  // alpha ≈ 55/255
             for (i in 0 until 4) {
                 val isFilled = i < bars
                 views.setInt(
                     signalBarIds[i],
                     "setBackgroundColor",
-                    if (isFilled) color else unfilled,
+                    if (isFilled) accent else unfilled,
                 )
             }
         }
