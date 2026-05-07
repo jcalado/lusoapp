@@ -71,6 +71,8 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
             val batteryPct  = (prefs.all["battery_pct"]   as? Number)?.toInt() ?: 0
             val contacts    = (prefs.all["contact_count"] as? Number)?.toInt() ?: 0
             val channels    = (prefs.all["channel_count"] as? Number)?.toInt() ?: 0
+            val signalBars  = ((prefs.all["signal_bars"]  as? Number)?.toInt() ?: 0)
+                .coerceIn(0, 4)
             val lastUpdated = prefs.getString("last_updated", "--:--") ?: "--:--"
 
             val config = WidgetConfig.load(context, widgetId)
@@ -92,6 +94,9 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
                 R.id.widget_gps_badge,
                 if (gpsSharing) View.VISIBLE else View.GONE,
             )
+
+            // Signal bars — only meaningful while connected.
+            renderSignalBars(views, if (connected) signalBars else 0)
 
             // Status dot: neutral white drawable tinted at runtime.
             views.setTextViewText(
@@ -268,6 +273,35 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
                     Uri.parse(uri),
                 ),
             )
+        }
+
+        private val signalBarIds = intArrayOf(
+            R.id.widget_signal_bar_0,
+            R.id.widget_signal_bar_1,
+            R.id.widget_signal_bar_2,
+            R.id.widget_signal_bar_3,
+        )
+
+        // Mirrors lib/ui/screens/home_screen.dart::_SignalBarsIcon._bars +
+        // its colour mapping. Keep these in sync.
+        private fun renderSignalBars(views: RemoteViews, bars: Int) {
+            val color = when (bars) {
+                4    -> Color.parseColor("#FF4CAF50") // green
+                3    -> Color.parseColor("#FF8BC34A") // light green
+                2    -> Color.parseColor("#FFFF9800") // orange
+                1    -> Color.parseColor("#FFF44336") // red
+                else -> Color.parseColor("#FF9E9E9E") // gray (no signal)
+            }
+            // Unfilled bars use the same hue at low alpha (matches the app).
+            val unfilled = (color and 0x00FFFFFF) or 0x37000000  // alpha ≈ 55/255
+            for (i in 0 until 4) {
+                val isFilled = i < bars
+                views.setInt(
+                    signalBarIds[i],
+                    "setBackgroundColor",
+                    if (isFilled) color else unfilled,
+                )
+            }
         }
 
         private fun batteryIconFor(pct: Int): Int = when {

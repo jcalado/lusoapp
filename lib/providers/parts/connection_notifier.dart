@@ -406,6 +406,7 @@ class ConnectionNotifier extends StateNotifier<TransportState> {
       batteryPct: batteryPct,
       contactCount: contacts.length,
       channelCount: channels.where((c) => !c.isEmpty).length,
+      signalBars: WidgetService.signalBarsForSnr(_ref.read(bestSignalSnrProvider)),
     );
   }
 

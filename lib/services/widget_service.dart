@@ -30,6 +30,7 @@ class WidgetService {
     required int contactCount,
     required int channelCount,
     bool? gpsSharing,
+    int? signalBars,
   }) async {
     if (!_supported) return;
     try {
@@ -47,12 +48,24 @@ class WidgetService {
         HomeWidget.saveWidgetData<String>('last_updated', ts),
         if (gpsSharing != null)
           HomeWidget.saveWidgetData<bool>('gps_sharing', gpsSharing),
+        if (signalBars != null)
+          HomeWidget.saveWidgetData<int>('signal_bars', signalBars.clamp(0, 4)),
       ]);
 
       await HomeWidget.updateWidget(androidName: _androidProvider);
     } catch (_) {
       // Widget errors are non-fatal.
     }
+  }
+
+  /// Map a LoRa SNR value (dB) to a 0–4 bar count. Mirrors
+  /// `_SignalBarsIcon._bars` in `home_screen.dart` — keep in sync.
+  static int signalBarsForSnr(double? snr) {
+    if (snr == null) return 0;
+    if (snr >= 0) return 4;
+    if (snr >= -5) return 3;
+    if (snr >= -10) return 2;
+    return 1;
   }
 
   /// Push only the GPS-sharing badge state. Used when the user toggles
