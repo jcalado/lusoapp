@@ -87,20 +87,11 @@
                 android:layout_marginStart="1.5dp" />
         </LinearLayout>
 
-    </LinearLayout>
-
-    <!-- Metric strip: battery / contacts / channels, last-updated on right -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="10dp">
-
         <ImageView
             android:id="@+id/widget_battery_icon"
             android:layout_width="14dp"
             android:layout_height="14dp"
+            android:layout_marginStart="10dp"
             android:layout_marginEnd="4dp"
             android:src="@drawable/ic_widget_battery_alert"
             android:tint="@color/widget_on_surface_variant"
@@ -112,17 +103,18 @@
             android:layout_height="wrap_content"
             android:text="0%"
             android:textColor="@color/widget_on_surface"
-            android:textSize="13sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="·"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:textColor="@color/widget_on_surface_outline"
-            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- Metric strip: battery / contacts / channels, last-updated on right -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="10dp">
 
         <ImageView
             android:layout_width="14dp"
