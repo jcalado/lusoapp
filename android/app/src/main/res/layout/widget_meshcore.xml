@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/widget_background"
-    android:padding="10dp">
+    android:padding="16dp">
 
-    <!-- Row 1: Radio name + connection status (tap = open app) -->
+    <!-- Header: radio name + status dot/label, GPS pin -->
     <LinearLayout
         android:id="@+id/widget_header"
         android:layout_width="match_parent"
@@ -20,281 +20,288 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="6dp"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="monospace"
             android:text="—"
-            android:textColor="#FFFFFFFF"
-            android:textSize="17sp"
+            android:textColor="@color/widget_on_surface"
+            android:textSize="22sp"
             android:textStyle="bold"
+            android:letterSpacing="-0.01"
             android:maxLines="1"
             android:ellipsize="end" />
 
-        <!-- GPS sharing badge — green pin appears only when user opted in -->
         <ImageView
             android:id="@+id/widget_gps_badge"
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:layout_marginEnd="6dp"
+            android:layout_marginEnd="10dp"
             android:src="@drawable/ic_widget_location"
+            android:tint="@color/widget_on_surface_variant"
             android:contentDescription="GPS"
             android:visibility="gone" />
 
-        <!-- Status pill — background swapped at runtime to show on/off colour -->
+        <FrameLayout
+            android:id="@+id/widget_status_dot"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/widget_status_dot_offline" />
+
         <TextView
             android:id="@+id/widget_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/widget_status_chip_offline"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
             android:text="OFFLINE"
-            android:textColor="#FFFFFFFF"
-            android:textSize="10sp"
+            android:textColor="@color/widget_on_surface_variant"
+            android:textSize="11sp"
             android:textStyle="bold"
-            android:letterSpacing="0.05" />
+            android:letterSpacing="0.08" />
 
     </LinearLayout>
 
-    <!-- Divider -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:background="#2200E676"
-        android:orientation="horizontal" />
-
-    <!-- Row 2: Battery icon + percentage, last updated on the right -->
+    <!-- Metric strip: battery / contacts / channels, last-updated on right -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:layout_marginTop="10dp">
 
         <ImageView
             android:id="@+id/widget_battery_icon"
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:layout_marginEnd="5dp"
+            android:layout_marginEnd="4dp"
             android:src="@drawable/ic_widget_battery_alert"
+            android:tint="@color/widget_on_surface_variant"
             android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/widget_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0%"
+            android:textColor="@color/widget_on_surface"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="·"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/widget_on_surface_outline"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/ic_widget_people"
+            android:tint="@color/widget_on_surface_variant"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/widget_contacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/widget_on_surface"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="·"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:textColor="@color/widget_on_surface_outline"
+            android:textSize="13sp" />
+
+        <ImageView
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/ic_widget_tag"
+            android:tint="@color/widget_on_surface_variant"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/widget_channels"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="0%"
-            android:textColor="#FFFFFFFF"
-            android:textSize="11sp"
+            android:text="0"
+            android:textColor="@color/widget_on_surface"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/widget_updated"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="monospace"
             android:text="--:--"
-            android:textColor="#FF888888"
-            android:textSize="10sp" />
+            android:textColor="@color/widget_on_surface_outline"
+            android:textSize="11sp" />
 
     </LinearLayout>
 
-    <!-- Row 3: contact count + channel count, each with its own icon -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="3dp">
-
-        <ImageView
-            android:layout_width="13dp"
-            android:layout_height="13dp"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/ic_widget_people"
-            android:contentDescription="@null" />
-
-        <TextView
-            android:id="@+id/widget_contacts"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="0"
-            android:textColor="#FF00E676"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <ImageView
-            android:layout_width="13dp"
-            android:layout_height="13dp"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/ic_widget_tag"
-            android:contentDescription="@null" />
-
-        <TextView
-            android:id="@+id/widget_channels"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0"
-            android:textColor="#FF00E676"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
-
-    <!-- Spacer pushes the button row to the bottom on tall widgets;
-         small min-height keeps the layout tight when the user resizes down -->
-    <LinearLayout
+    <!-- Spacer pushes the action row to the bottom on tall widgets -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:minHeight="6dp"
-        android:orientation="horizontal" />
+        android:minHeight="8dp" />
 
-    <!-- SOS row — broadcasts the configured emergency canned message to ch 0 -->
+    <!-- Action row: circular filled-tonal icon buttons -->
     <LinearLayout
-        android:id="@+id/widget_btn_sos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/widget_button_sos_bg"
+        android:orientation="horizontal"
+        android:layout_marginTop="14dp"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingTop="9dp"
-        android:paddingBottom="9dp">
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_widget_warning"
-            android:contentDescription="@null" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SOS — Emergência"
-            android:textColor="#FFFF8888"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+        android:weightSum="5">
 
-    <!-- Action button row -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="6dp"
-        android:gravity="center">
-
-        <!-- Send Advert (highlighted in orange) -->
+        <!-- SOS — tonal error container, label visible -->
         <LinearLayout
-            android:id="@+id/widget_btn_advert"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/widget_button_advert_bg"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginEnd="6dp"
-                android:src="@drawable/ic_widget_broadcast"
-                android:contentDescription="@null" />
+            android:orientation="vertical"
+            android:gravity="center">
+            <FrameLayout
+                android:id="@+id/widget_btn_sos"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/widget_action_btn_sos_bg">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_warning"
+                    android:tint="@color/widget_on_error"
+                    android:contentDescription="SOS" />
+            </FrameLayout>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Anúncio"
-                android:textColor="#FFFFCC88"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="4dp"
+                android:text="SOS"
+                android:textColor="@color/widget_on_surface_variant"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06" />
         </LinearLayout>
 
-        <!-- Open Chats -->
+        <!-- Advert -->
         <LinearLayout
-            android:id="@+id/widget_btn_chats"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/widget_button_bg"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginEnd="6dp"
-                android:src="@drawable/ic_widget_chat"
-                android:contentDescription="@null" />
-            <TextView
+            android:orientation="vertical"
+            android:gravity="center">
+            <FrameLayout
+                android:id="@+id/widget_btn_advert"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/widget_action_btn_bg">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_broadcast"
+                    android:tint="@color/widget_on_surface"
+                    android:contentDescription="Anúncio" />
+            </FrameLayout>
+            <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chats"
-                android:textColor="#FFFFFFFF"
-                android:textSize="11sp" />
+                android:layout_height="14dp" />
         </LinearLayout>
 
-        <!-- Open Map -->
+        <!-- Chats -->
         <LinearLayout
-            android:id="@+id/widget_btn_map"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:background="@drawable/widget_button_bg"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginEnd="6dp"
-                android:src="@drawable/ic_widget_map"
-                android:contentDescription="@null" />
-            <TextView
+            android:orientation="vertical"
+            android:gravity="center">
+            <FrameLayout
+                android:id="@+id/widget_btn_chats"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/widget_action_btn_bg">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_chat"
+                    android:tint="@color/widget_on_surface"
+                    android:contentDescription="Chats" />
+            </FrameLayout>
+            <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mapa"
-                android:textColor="#FFFFFFFF"
-                android:textSize="11sp" />
+                android:layout_height="14dp" />
         </LinearLayout>
 
-        <!-- Connect / Devices — colour + label change based on connection state.
-             The container holds the click target; the inner TextView carries the
-             dynamic label/colour so the provider can update it directly. -->
+        <!-- Map -->
         <LinearLayout
-            android:id="@+id/widget_btn_connect"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginStart="4dp"
-            android:background="@drawable/widget_button_connect_off_bg"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginEnd="6dp"
-                android:src="@drawable/ic_widget_power"
-                android:contentDescription="@null" />
+            android:orientation="vertical"
+            android:gravity="center">
+            <FrameLayout
+                android:id="@+id/widget_btn_map"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/widget_action_btn_bg">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_map"
+                    android:tint="@color/widget_on_surface"
+                    android:contentDescription="Mapa" />
+            </FrameLayout>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="14dp" />
+        </LinearLayout>
+
+        <!-- Connect — colour swaps via provider; label below shows state -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <FrameLayout
+                android:id="@+id/widget_btn_connect"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/widget_action_btn_bg">
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/widget_btn_connect_icon"
+                    android:src="@drawable/ic_widget_power"
+                    android:tint="@color/widget_on_surface"
+                    android:contentDescription="Conectar" />
+            </FrameLayout>
             <TextView
                 android:id="@+id/widget_btn_connect_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ligar"
-                android:textColor="#FFFF8888"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="4dp"
+                android:text="LIGAR"
+                android:textColor="@color/widget_on_surface_variant"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06" />
         </LinearLayout>
 
     </LinearLayout>

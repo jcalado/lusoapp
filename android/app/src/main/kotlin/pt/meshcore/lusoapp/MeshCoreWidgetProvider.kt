@@ -66,12 +66,12 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
                 if (connected) "ONLINE" else "OFFLINE",
             )
             views.setInt(
-                R.id.widget_status,
+                R.id.widget_status_dot,
                 "setBackgroundResource",
                 if (connected) {
-                    R.drawable.widget_status_chip_online
+                    R.drawable.widget_status_dot_online
                 } else {
-                    R.drawable.widget_status_chip_offline
+                    R.drawable.widget_status_dot_offline
                 },
             )
 
@@ -80,32 +80,56 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
                 R.id.widget_battery_icon,
                 batteryIconFor(batteryPct),
             )
+            // Semantic tint: critical → red, low → brand orange, else neutral.
+            val batteryTint = when {
+                batteryPct <= 15 -> Color.parseColor("#FFB3261E")
+                batteryPct <= 40 -> Color.parseColor("#FFFF6B00")
+                else             -> null
+            }
+            views.setInt(
+                R.id.widget_battery_icon,
+                "setColorFilter",
+                batteryTint ?: context.getColor(R.color.widget_on_surface_variant),
+            )
+            if (batteryTint != null) {
+                views.setTextColor(R.id.widget_battery, batteryTint)
+            } else {
+                views.setTextColor(
+                    R.id.widget_battery,
+                    context.getColor(R.color.widget_on_surface),
+                )
+            }
             views.setTextViewText(R.id.widget_contacts, contacts.toString())
             views.setTextViewText(R.id.widget_channels, channels.toString())
             views.setTextViewText(R.id.widget_updated,  lastUpdated)
 
-            // Connect button reflects the live transport state. The compound
-            // power icon stays the off-state colour because RemoteViews can't
-            // reliably retint a compound drawable across API levels — text
-            // colour + background carry the state instead.
-            val connectColor = if (connected) {
-                Color.parseColor("#FF88FFAA")
-            } else {
-                Color.parseColor("#FFFF8888")
-            }
+            // Connect button: filled-tonal when off, brand orange when on.
             views.setTextViewText(
                 R.id.widget_btn_connect_label,
-                if (connected) "Ligado" else "Ligar",
+                if (connected) "LIGADO" else "LIGAR",
             )
-            views.setTextColor(R.id.widget_btn_connect_label, connectColor)
             views.setInt(
                 R.id.widget_btn_connect,
                 "setBackgroundResource",
                 if (connected) {
-                    R.drawable.widget_button_connect_on_bg
+                    R.drawable.widget_action_btn_active_bg
                 } else {
-                    R.drawable.widget_button_connect_off_bg
+                    R.drawable.widget_action_btn_bg
                 },
+            )
+            views.setTextColor(
+                R.id.widget_btn_connect_label,
+                if (connected) {
+                    Color.parseColor("#FFFF6B00")
+                } else {
+                    context.getColor(R.color.widget_on_surface_variant)
+                },
+            )
+            // Power icon: white on orange when active, neutral otherwise.
+            views.setInt(
+                R.id.widget_btn_connect_icon,
+                "setColorFilter",
+                if (connected) Color.WHITE else context.getColor(R.color.widget_on_surface),
             )
 
             // Header (radio name + status) → just open the app.
