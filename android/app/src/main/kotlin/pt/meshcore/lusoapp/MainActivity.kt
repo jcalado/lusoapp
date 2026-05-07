@@ -30,12 +30,25 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    // home_widget reads the launch URI via getIntent(); when the app is
-    // already running and a widget button is tapped, Android delivers the
-    // new URI through onNewIntent. We must call setIntent(intent) so the
-    // plugin's widgetClicked stream sees it — otherwise the second tap
-    // silently lands on `/channels` (the redirect fallback).
+    /// FlutterActivity.onNewIntent does two things, in order:
+    ///   1) Dispatches the intent to all activity-aware plugins (home_widget
+    ///      reads the URI from intent.data here so its widgetClicked stream
+    ///      can deliver it to Dart).
+    ///   2) If intent.data is non-null, pushes that URI to the
+    ///      "flutter/navigation" channel as a deep-link route — which makes
+    ///      GoRouter receive the meshcore-widget://… URI and run our scheme
+    ///      redirect, overwriting the navigation our Dart-side dispatcher
+    ///      just performed.
+    ///
+    /// For meshcore-widget URIs we want (1) but NOT (2). So we dispatch to
+    /// plugins manually and skip the navigation push that super would do.
     override fun onNewIntent(intent: Intent) {
+        val engine = flutterEngine
+        if (engine != null && intent.data?.scheme == "meshcore-widget") {
+            engine.activityControlSurface.onNewIntent(intent)
+            setIntent(intent)
+            return
+        }
         super.onNewIntent(intent)
         setIntent(intent)
     }

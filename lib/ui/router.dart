@@ -33,12 +33,13 @@ final routerProvider = Provider<GoRouter>((ref) {
     // `HomeWidget.widgetClicked` stream, so we only need to neutralise the
     // navigation side-effect here.
     redirect: (context, state) {
-      final loc = state.matchedLocation;
-      if (loc.startsWith('meshcore-widget') ||
+      // Defence-in-depth: MainActivity.onNewIntent already strips
+      // meshcore-widget:// URIs from Flutter's deep-link push, but if one
+      // ever leaks through (e.g. a cold start path we haven't covered),
+      // land on a stable shell route and let the WidgetService dispatcher
+      // re-route from there.
+      if (state.matchedLocation.startsWith('meshcore-widget') ||
           state.uri.scheme == 'meshcore-widget') {
-        // Land on the channels list — a stable, always-available shell
-        // route. The widget action handler in main.dart will then re-route
-        // to the right destination (chats / map / connect / etc.).
         return '/channels';
       }
       return null;
