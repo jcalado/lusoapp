@@ -45,7 +45,7 @@
             android:layout_width="8dp"
             android:layout_height="8dp"
             android:layout_marginEnd="6dp"
-            android:background="@drawable/widget_status_dot_offline" />
+            android:background="@drawable/widget_status_dot_neutral" />
 
         <TextView
             android:id="@+id/widget_status"
@@ -156,7 +156,7 @@
         android:layout_weight="1"
         android:minHeight="8dp" />
 
-    <!-- Action row: circular filled-tonal icon buttons -->
+    <!-- Action row: 5 generic slots, bound dynamically by provider -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -165,143 +165,179 @@
         android:gravity="center"
         android:weightSum="5">
 
-        <!-- SOS — tonal error container, label visible -->
+        <!-- Slot 0 -->
         <LinearLayout
+            android:id="@+id/widget_btn_wrap_0"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center">
             <FrameLayout
-                android:id="@+id/widget_btn_sos"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/widget_action_btn_sos_bg">
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_widget_warning"
-                    android:tint="@color/widget_on_error"
-                    android:contentDescription="SOS" />
-            </FrameLayout>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="SOS"
-                android:textColor="@color/widget_on_surface_variant"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:letterSpacing="0.06" />
-        </LinearLayout>
-
-        <!-- Advert -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <FrameLayout
-                android:id="@+id/widget_btn_advert"
+                android:id="@+id/widget_btn_slot_0"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
                 android:background="@drawable/widget_action_btn_bg">
                 <ImageView
+                    android:id="@+id/widget_btn_icon_0"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/ic_widget_broadcast"
-                    android:tint="@color/widget_on_surface"
-                    android:contentDescription="Anúncio" />
-            </FrameLayout>
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="14dp" />
-        </LinearLayout>
-
-        <!-- Chats -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <FrameLayout
-                android:id="@+id/widget_btn_chats"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/widget_action_btn_bg">
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_widget_chat"
-                    android:tint="@color/widget_on_surface"
-                    android:contentDescription="Chats" />
-            </FrameLayout>
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="14dp" />
-        </LinearLayout>
-
-        <!-- Map -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <FrameLayout
-                android:id="@+id/widget_btn_map"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/widget_action_btn_bg">
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_widget_map"
-                    android:tint="@color/widget_on_surface"
-                    android:contentDescription="Mapa" />
-            </FrameLayout>
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="14dp" />
-        </LinearLayout>
-
-        <!-- Connect — colour swaps via provider; label below shows state -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <FrameLayout
-                android:id="@+id/widget_btn_connect"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:background="@drawable/widget_action_btn_bg">
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center"
-                    android:id="@+id/widget_btn_connect_icon"
                     android:src="@drawable/ic_widget_power"
                     android:tint="@color/widget_on_surface"
-                    android:contentDescription="Conectar" />
+                    android:contentDescription="@null" />
             </FrameLayout>
             <TextView
-                android:id="@+id/widget_btn_connect_label"
+                android:id="@+id/widget_btn_label_0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="LIGAR"
+                android:text=""
                 android:textColor="@color/widget_on_surface_variant"
                 android:textSize="10sp"
                 android:textStyle="bold"
-                android:letterSpacing="0.06" />
+                android:letterSpacing="0.06"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Slot 1 -->
+        <LinearLayout
+            android:id="@+id/widget_btn_wrap_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <FrameLayout
+                android:id="@+id/widget_btn_slot_1"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/widget_action_btn_bg">
+                <ImageView
+                    android:id="@+id/widget_btn_icon_1"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_power"
+                    android:tint="@color/widget_on_surface"
+                    android:contentDescription="@null" />
+            </FrameLayout>
+            <TextView
+                android:id="@+id/widget_btn_label_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text=""
+                android:textColor="@color/widget_on_surface_variant"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Slot 2 -->
+        <LinearLayout
+            android:id="@+id/widget_btn_wrap_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <FrameLayout
+                android:id="@+id/widget_btn_slot_2"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/widget_action_btn_bg">
+                <ImageView
+                    android:id="@+id/widget_btn_icon_2"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_power"
+                    android:tint="@color/widget_on_surface"
+                    android:contentDescription="@null" />
+            </FrameLayout>
+            <TextView
+                android:id="@+id/widget_btn_label_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text=""
+                android:textColor="@color/widget_on_surface_variant"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Slot 3 -->
+        <LinearLayout
+            android:id="@+id/widget_btn_wrap_3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <FrameLayout
+                android:id="@+id/widget_btn_slot_3"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/widget_action_btn_bg">
+                <ImageView
+                    android:id="@+id/widget_btn_icon_3"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_power"
+                    android:tint="@color/widget_on_surface"
+                    android:contentDescription="@null" />
+            </FrameLayout>
+            <TextView
+                android:id="@+id/widget_btn_label_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text=""
+                android:textColor="@color/widget_on_surface_variant"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Slot 4 -->
+        <LinearLayout
+            android:id="@+id/widget_btn_wrap_4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+            <FrameLayout
+                android:id="@+id/widget_btn_slot_4"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/widget_action_btn_bg">
+                <ImageView
+                    android:id="@+id/widget_btn_icon_4"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_widget_power"
+                    android:tint="@color/widget_on_surface"
+                    android:contentDescription="@null" />
+            </FrameLayout>
+            <TextView
+                android:id="@+id/widget_btn_label_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text=""
+                android:textColor="@color/widget_on_surface_variant"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.06"
+                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>
