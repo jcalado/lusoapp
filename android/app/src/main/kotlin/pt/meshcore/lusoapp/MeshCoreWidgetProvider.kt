@@ -172,7 +172,7 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
                     continue
                 }
                 views.setViewVisibility(slotWraps[i], View.VISIBLE)
-                bindSlot(context, views, i, key, connected, accent)
+                bindSlot(context, views, i, key, connected, accent, key in config.labels)
             }
 
             appWidgetManager.updateAppWidget(widgetId, views)
@@ -185,6 +185,7 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
             key: String,
             connected: Boolean,
             accent: Int,
+            showLabel: Boolean,
         ) {
             val frame = slotFrames[slotIndex]
             val icon  = slotIcons[slotIndex]
@@ -197,7 +198,6 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
             var bgTint: Int? = null  // null ⇒ leave drawable colour as-is
             var labelText = ""
             var labelColor = context.getColor(R.color.widget_on_surface_variant)
-            var labelVisible = false
             var uri = URI_OPEN
 
             when (key) {
@@ -205,12 +205,12 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
                     iconRes  = R.drawable.ic_widget_warning
                     iconTint = context.getColor(R.color.widget_on_error)
                     bgRes    = R.drawable.widget_action_btn_sos_bg
-                    labelText = "SOS"
-                    labelVisible = true
+                    labelText = context.getString(R.string.widget_btn_sos)
                     uri = URI_SOS
                 }
                 "advert" -> {
                     iconRes = R.drawable.ic_widget_broadcast
+                    labelText = context.getString(R.string.widget_btn_advert)
                     uri = URI_ADVERT
                 }
                 "connect" -> {
@@ -224,23 +224,26 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
                     } else {
                         labelText  = "LIGAR"
                     }
-                    labelVisible = true
                     uri = URI_CONNECT
                 }
                 "chats" -> {
                     iconRes = R.drawable.ic_widget_chat
+                    labelText = context.getString(R.string.widget_btn_chats)
                     uri = URI_CHATS
                 }
                 "map" -> {
                     iconRes = R.drawable.ic_widget_map
+                    labelText = context.getString(R.string.widget_btn_map)
                     uri = URI_MAP
                 }
                 "plan333" -> {
                     iconRes = R.drawable.ic_widget_plan333
+                    labelText = context.getString(R.string.widget_btn_plan333)
                     uri = URI_PLAN333
                 }
                 "telemetry" -> {
                     iconRes = R.drawable.ic_widget_telemetry
+                    labelText = context.getString(R.string.widget_btn_telemetry)
                     uri = URI_TELEMETRY
                 }
             }
@@ -255,7 +258,7 @@ class MeshCoreWidgetProvider : AppWidgetProvider() {
             views.setTextColor(label, labelColor)
             views.setViewVisibility(
                 label,
-                if (labelVisible) View.VISIBLE else View.GONE,
+                if (showLabel) View.VISIBLE else View.GONE,
             )
             views.setOnClickPendingIntent(
                 frame,

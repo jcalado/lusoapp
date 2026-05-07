@@ -1,11 +1,11 @@
 package pt.meshcore.lusoapp
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -18,6 +18,7 @@ import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,7 +46,11 @@ class WidgetConfigActivity : AppCompatActivity() {
     private lateinit var rows: MutableList<ButtonRow>
     private var selectedAccent = WidgetConfig.DEFAULT_ACCENT
 
-    private data class ButtonRow(val key: String, var checked: Boolean)
+    private data class ButtonRow(
+        val key: String,
+        var checked: Boolean,
+        var showLabel: Boolean,
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,8 +78,9 @@ class WidgetConfigActivity : AppCompatActivity() {
         // then unselected items in canonical order.
         val selectedKeys = current.buttons
         val rest = WidgetConfig.ALL_BUTTONS.filter { it !in selectedKeys }
-        rows = (selectedKeys.map { ButtonRow(it, true) } +
-                rest.map { ButtonRow(it, false) }).toMutableList()
+        rows = (selectedKeys.map { ButtonRow(it, true,  it in current.labels) } +
+                rest.map         { ButtonRow(it, false, it in current.labels) }
+               ).toMutableList()
 
         setupButtonsList()
         setupSwatches()
@@ -123,15 +129,16 @@ class WidgetConfigActivity : AppCompatActivity() {
     }
 
     private fun makeSwatch(color: Int, isCustom: Boolean): View {
-        val size = (resources.displayMetrics.density * 40).toInt()
-        val margin = (resources.displayMetrics.density * 6).toInt()
+        val density = resources.displayMetrics.density
+        val size    = (density * 40).toInt()
+        val margin  = (density * 6).toInt()
+        val ringPx  = (density * 3).toInt()
 
-        val v = ImageView(this).apply {
+        return ImageView(this).apply {
             layoutParams = ViewGroup.MarginLayoutParams(size, size).apply {
                 setMargins(margin, margin, margin, margin)
             }
-            setBackgroundResource(R.drawable.widget_swatch_bg)
-            backgroundTintList = ColorStateList.valueOf(color)
+            background = makeSwatchDrawable(color, ringPx)
             isClickable = true
             isFocusable = true
             tag = color
@@ -141,7 +148,24 @@ class WidgetConfigActivity : AppCompatActivity() {
                 refreshSwatchSelection()
             }
         }
-        return v
+    }
+
+    private fun makeSwatchDrawable(color: Int, ringPx: Int): StateListDrawable {
+        val ringColor = resources.getColor(android.R.color.darker_gray, theme)
+
+        val unselected = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(color)
+        }
+        val selected = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(color)
+            setStroke(ringPx, ringColor)
+        }
+        return StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_selected), selected)
+            addState(intArrayOf(), unselected)
+        }
     }
 
     private fun makeCustomTile(): View {
@@ -241,9 +265,11 @@ class WidgetConfigActivity : AppCompatActivity() {
                     .show()
                 return@setOnClickListener
             }
+            // Only labels for selected buttons are persisted.
+            val labels = rows.filter { it.checked && it.showLabel }.map { it.key }.toSet()
             WidgetConfig.save(
                 this, widgetId,
-                WidgetConfig(buttons = selected, accent = selectedAccent),
+                WidgetConfig(buttons = selected, labels = labels, accent = selectedAccent),
             )
             val mgr = AppWidgetManager.getInstance(this)
             MeshCoreWidgetProvider.updateWidget(this, mgr, widgetId)
@@ -262,10 +288,11 @@ class WidgetConfigActivity : AppCompatActivity() {
         var touchHelper: ItemTouchHelper? = null
 
         inner class VH(view: View) : RecyclerView.ViewHolder(view) {
-            val check: CheckBox  = view.findViewById(R.id.pick_check)
-            val icon: ImageView  = view.findViewById(R.id.pick_icon)
-            val label: TextView  = view.findViewById(R.id.pick_label)
-            val drag: ImageView  = view.findViewById(R.id.pick_drag)
+            val check: CheckBox       = view.findViewById(R.id.pick_check)
+            val icon: ImageView       = view.findViewById(R.id.pick_icon)
+            val label: TextView       = view.findViewById(R.id.pick_label)
+            val labelSwitch: SwitchCompat = view.findViewById(R.id.pick_label_toggle)
+            val drag: ImageView       = view.findViewById(R.id.pick_drag)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -289,6 +316,14 @@ class WidgetConfigActivity : AppCompatActivity() {
                 rows.sortByDescending { it.checked }
                 notifyDataSetChanged()
             }
+
+            h.labelSwitch.setOnCheckedChangeListener(null)
+            h.labelSwitch.isChecked = row.showLabel
+            h.labelSwitch.visibility = if (row.checked) View.VISIBLE else View.GONE
+            h.labelSwitch.setOnCheckedChangeListener { _, isChecked ->
+                row.showLabel = isChecked
+            }
+
             h.drag.visibility = if (row.checked) View.VISIBLE else View.GONE
             h.drag.setOnTouchListener { _, ev ->
                 if (ev.actionMasked == MotionEvent.ACTION_DOWN) {

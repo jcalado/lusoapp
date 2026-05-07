@@ -13,6 +13,7 @@
     <string name="widget_config_buttons_help">Seleciona 3 a 5 e arrasta para reordenar.</string>
     <string name="widget_config_accent_header">Cor de destaque</string>
     <string name="widget_config_custom_color">Personalizada…</string>
+    <string name="widget_config_show_label">Etiqueta</string>
     <string name="widget_config_save">Guardar</string>
     <string name="widget_config_cancel">Cancelar</string>
     <string name="widget_btn_sos">SOS</string>

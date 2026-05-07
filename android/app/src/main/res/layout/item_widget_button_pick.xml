@@ -27,6 +27,15 @@
         android:layout_weight="1"
         android:textSize="15sp" />
 
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/pick_label_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/widget_config_show_label"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/pick_drag"
         android:layout_width="24dp"
