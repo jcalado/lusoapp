@@ -175,7 +175,7 @@ class _McAppPtState extends ConsumerState<McAppPt> {
         final svc = ref.read(radioServiceProvider);
         final connected =
             ref.read(connectionProvider) == TransportState.connected;
-        final messenger = ScaffoldMessenger.maybeOf(context);
+        final messenger = _rootMessenger();
         if (svc != null && connected) {
           svc.sendAdvert(flood: false);
           messenger?.showSnackBar(
@@ -194,7 +194,7 @@ class _McAppPtState extends ConsumerState<McAppPt> {
           router.go('/connect');
         }
       case WidgetAction.sendEmergency:
-        final messenger = ScaffoldMessenger.maybeOf(context);
+        final messenger = _rootMessenger();
         final emergency = ref.read(cannedMessagesProvider.notifier).emergency;
         final base = emergency?.text;
         final result = ref
@@ -254,6 +254,17 @@ class _McAppPtState extends ConsumerState<McAppPt> {
           }
         });
     }
+  }
+
+  /// Resolve the app's `ScaffoldMessenger` from the root navigator context.
+  /// Widget click dispatch runs from `_McAppPtState`, whose `context` lives
+  /// *above* `MaterialApp` and therefore has neither `MaterialLocalizations`
+  /// nor a `ScaffoldMessenger` ancestor — so `ScaffoldMessenger.maybeOf(context)`
+  /// silently returns null and snackbars never appear.
+  ScaffoldMessengerState? _rootMessenger() {
+    final ctx = rootNavigatorKey.currentContext;
+    if (ctx == null) return null;
+    return ScaffoldMessenger.maybeOf(ctx);
   }
 
   /// Widget power button: toggle the radio connection with a confirmation
@@ -352,16 +363,12 @@ class _McAppPtState extends ConsumerState<McAppPt> {
         );
     }
     if (!mounted || ok) return;
-    final messengerContext = rootNavigatorKey.currentContext;
-    if (messengerContext != null) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.maybeOf(messengerContext)?.showSnackBar(
-        const SnackBar(
-          content: Text('Falha ao ligar ao dispositivo'),
-          duration: Duration(seconds: 3),
-        ),
-      );
-    }
+    _rootMessenger()?.showSnackBar(
+      const SnackBar(
+        content: Text('Falha ao ligar ao dispositivo'),
+        duration: Duration(seconds: 3),
+      ),
+    );
     router.go('/connect');
   }
 
