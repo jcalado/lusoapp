@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,8 +25,14 @@ import 'apps/topology/topology_screen.dart';
 import 'apps/data_export/data_export_screen.dart';
 import 'screens/repeater_screen.dart';
 
+/// Root navigator key — exposed so non-widget call sites (e.g. the home-screen
+/// widget click dispatcher in `main.dart`) can show dialogs from a context
+/// that lives *below* `MaterialApp` and therefore has `MaterialLocalizations`.
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/connect',
     // Widget click intents arrive as `meshcore-widget://...` URIs and would
     // otherwise hit GoRouter's "no route" page. The actual action is handled

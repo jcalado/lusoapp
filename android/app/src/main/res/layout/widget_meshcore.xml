@@ -178,13 +178,17 @@
         android:layout_weight="1"
         android:minHeight="8dp" />
 
-    <!-- Action row: 5 generic slots, bound dynamically by provider -->
+    <!-- Action row: 5 generic slots, bound dynamically by provider.
+         gravity="top" keeps the action buttons (the first child in each
+         wrapper) aligned along the top of the row even when only some
+         slots have labels — otherwise label-less wrappers get vertically
+         centered and their buttons end up lower than label-bearing ones. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="14dp"
-        android:gravity="center"
+        android:gravity="top"
         android:weightSum="5">
 
         <!-- Slot 0 -->
